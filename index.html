@@ -3,38 +3,53 @@
 		<script src="oz.js"></script>
 		<script src="draw.js"></script>
 		<style>
-			canvas { border:2px solid black; float: left;}
+			canvas { border:2px solid black; float: left; margin-right: .5em; cursor:crosshair; }
+			.active { font-weight: bold; }
 		</style>
 	</head>
 	<body>
 		<canvas id="canvas" width="512" height="512"></canvas>
-		<button id="clear">Clear</button><br/>
-		<select id="color">
-			<option value="#000" selected="selected">black</option>
-			<option value="#f00">red</option>
-			<option value="#800000">maroon</option>
-			<option value="#ffa500">orange</option>
-			<option value="#ff0">yellow</option>
-			<option value="#808000">olive</option>
-			<option value="#0f0">lime</option>
-			<option value="#008000">green</option>
-			<option value="#0ff">aqua</option>
-			<option value="#008080">teal</option>
-			<option value="#00f">blue</option>
-			<option value="#000080">navy</option>
-			<option value="#f0f">fuchsia</option>
-			<option value="#800080">purple</option>
-		</select><br/>
-		<select id="width">
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="4">4</option>
-			<option value="7">7</option>
-			<option value="10">10</option>
-			<option value="20">20</option>
-		</select>px
+		<button id="line">Draw lines</button>
+		<button id="image">Upload image</button>
+		<button id="clear">Clear</button>
+		<hr/>
+		
+		<div id="line_options" style="display:none">
+			Color: <select id="color">
+				<option value="#000" selected="selected">black</option>
+				<option value="#f00">red</option>
+				<option value="#800000">maroon</option>
+				<option value="#ffa500">orange</option>
+				<option value="#ff0">yellow</option>
+				<option value="#808000">olive</option>
+				<option value="#0f0">lime</option>
+				<option value="#008000">green</option>
+				<option value="#0ff">aqua</option>
+				<option value="#008080">teal</option>
+				<option value="#00f">blue</option>
+				<option value="#000080">navy</option>
+				<option value="#f0f">fuchsia</option>
+				<option value="#800080">purple</option>
+			</select><br/>
+			Thickness: <select id="width">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="4">4</option>
+				<option value="7">7</option>
+				<option value="10">10</option>
+				<option value="20">20</option>
+			</select>px
+		</div>
+		
+		<div id="image_options" style="display:none">
+			<input id="file" type="file" />
+			<div>Pick a file, then click into canvas to place it</div>
+		</div>
+		
+		<div id="clear_options" style="display:none"></div>
+		
 		<script>
-			new Draw("ws://localhost:8888");
+			new Draw();
 		</script>
 	</body>
 </html>

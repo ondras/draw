@@ -9,7 +9,7 @@ var app = {
 		var cs = JSON.parse(data);
 		for (i=0;i<cs.length;i++) {
 			var c = cs[i];
-			if (c == "c") {
+			if (c.type == "clear") {
 				commands = [];
 			} else {
 				commands.push(c);
