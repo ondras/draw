@@ -1,10 +1,8 @@
-var Server = require("websocket").Server;
-var ws = new Server("0.0.0.0", 8888);
-
 var clients = [];
 var commands = [];
 
 var app = {
+	ws: null,
 	onmessage: function(client, data) {
 		var cs = JSON.parse(data);
 		for (i=0;i<cs.length;i++) {
@@ -18,13 +16,13 @@ var app = {
 
 		for (var i=0;i<clients.length;i++) {
 			if (clients[i] != client) { 
-				ws.send(clients[i], data);
+				this.ws.send(clients[i], data);
 			}
 		}
 	},
 	onconnect: function(client, headers) {
 		clients.push(client);
-		if (commands.length) { ws.send(client, JSON.stringify(commands)); }
+		if (commands.length) { this.ws.send(client, JSON.stringify(commands)); }
 	},
 	ondisconnect: function(client, code, message) {
 		var index = clients.indexOf(client);
@@ -33,5 +31,5 @@ var app = {
 	}
 };
 
-ws.addApplication(app);
-ws.run();
+exports.app = app;
+

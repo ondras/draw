@@ -1,21 +1,28 @@
+<!doctype html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width" />
+		<title>WebSocket Collaborative Drawing Tool</title>
 		<script src="oz.js"></script>
+		<script src="touch.oz.js"></script>
 		<script src="draw.js"></script>
 		<style>
-			canvas { border:2px solid black; float: left; margin-right: .5em; cursor:crosshair; }
+			body { background-color: #ccc; font-size: 120%; text-shadow: 0px 1px 1px #fff; }
+			button { font-size: 120%; cursor: pointer; }
+			canvas { background-color: #fff; border-radius:6px; border:1px solid #444; float: left; margin-right: .5em; cursor:crosshair; }
 			.active { font-weight: bold; }
 		</style>
 	</head>
 	<body>
-		<canvas id="canvas" width="512" height="512"></canvas>
+		<canvas id="canvas" width="640" height="480"></canvas>
 		<button id="line">Draw lines</button>
 		<button id="image">Upload image</button>
+		<button id="text">Text</button>
 		<button id="clear">Clear</button>
 		<hr/>
 		
 		<div id="line_options" style="display:none">
-			Color: <select id="color">
+			Color: <select id="line_color">
 				<option value="#000" selected="selected">black</option>
 				<option value="#f00">red</option>
 				<option value="#800000">maroon</option>
@@ -31,9 +38,9 @@
 				<option value="#f0f">fuchsia</option>
 				<option value="#800080">purple</option>
 			</select><br/>
-			Thickness: <select id="width">
+			Thickness: <select id="line_width">
 				<option value="1">1</option>
-				<option value="2">2</option>
+				<option value="2"selected="selected">2</option>
 				<option value="4">4</option>
 				<option value="7">7</option>
 				<option value="10">10</option>
@@ -46,6 +53,34 @@
 			<div>Pick a file, then click into canvas to place it</div>
 		</div>
 		
+		<div id="text_options" style="display:none">
+			Text: <input type="text" id="text_value" /><br/>
+			Color: <select id="text_color">
+				<option value="#000" selected="selected">black</option>
+				<option value="#f00">red</option>
+				<option value="#800000">maroon</option>
+				<option value="#ffa500">orange</option>
+				<option value="#ff0">yellow</option>
+				<option value="#808000">olive</option>
+				<option value="#0f0">lime</option>
+				<option value="#008000">green</option>
+				<option value="#0ff">aqua</option>
+				<option value="#008080">teal</option>
+				<option value="#00f">blue</option>
+				<option value="#000080">navy</option>
+				<option value="#f0f">fuchsia</option>
+				<option value="#800080">purple</option>
+			</select><br/>
+			Size: <select id="text_size">
+				<option value="10" selected="selected">10</option>
+				<option value="14">14</option>
+				<option value="20">20</option>
+				<option value="30">30</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+			</select>px
+		</div>
+
 		<div id="clear_options" style="display:none"></div>
 		
 		<script>

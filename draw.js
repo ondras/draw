@@ -4,6 +4,7 @@ Draw.prototype.init = function() {
 	this._socket = new (window.WebSocket || window.MozWebSocket)(Draw.URL);
 	this._canvas = OZ.$("canvas");
 	this._file = OZ.$("file");
+	this._text = OZ.$("text_value");
 	this._ctx = this._canvas.getContext("2d");
 	this._ec = [];
 	this._mode = "";
@@ -16,17 +17,26 @@ Draw.prototype.init = function() {
 	OZ.Event.add(this._socket, "message", this._message.bind(this));
 	OZ.Event.add(this._socket, "error", this._error.bind(this));
 	
-	OZ.Event.add(OZ.$("line"), "click", function() {
+	OZ.Touch.onActivate(OZ.$("line"), function() {
 		this._setMode("line");
 	}.bind(this));
-	OZ.Event.add(OZ.$("clear"), "click", function() {
+	OZ.Touch.onActivate(OZ.$("clear"), function() {
 		this._setMode("clear");
 	}.bind(this));
-	OZ.Event.add(OZ.$("image"), "click", function() {
+	OZ.Touch.onActivate(OZ.$("image"), function() {
 		this._setMode("image");
 	}.bind(this));
+	OZ.Touch.onActivate(OZ.$("text"), function() {
+		this._setMode("text");
+	}.bind(this));
 	
-	var options = OZ.$("color").getElementsByTagName("option");
+	var options = OZ.$("line_color").getElementsByTagName("option");
+	for (var i=0;i<options.length;i++) {
+		var c = options[i].value;
+		if (c == "#000") { options[i].style.color = "white"; }
+		options[i].style.backgroundColor = c;
+	}
+	var options = OZ.$("text_color").getElementsByTagName("option");
 	for (var i=0;i<options.length;i++) {
 		var c = options[i].value;
 		if (c == "#000") { options[i].style.color = "white"; }
@@ -34,6 +44,8 @@ Draw.prototype.init = function() {
 	}
 	
 	this._setMode("line");
+	OZ.Touch.onStart(this._canvas, this._mousedown.bind(this));
+	OZ.Event.add(this._file, "change", this._change.bind(this));
 }
 
 Draw.prototype._setMode = function(mode) {
@@ -82,8 +94,6 @@ Draw.prototype._change = function(e) {
 
 Draw.prototype._open = function(e) {
 	setInterval(this._check.bind(this), 30);
-	OZ.Event.add(this._canvas, "mousedown", this._mousedown.bind(this));
-	OZ.Event.add(this._file, "change", this._change.bind(this));
 }
 
 Draw.prototype._close = function(e) {
@@ -95,8 +105,9 @@ Draw.prototype._error = function(e) {
 }
 
 Draw.prototype._eventToCoords = function(e) {
+	var epos = OZ.Touch.pos(e);
 	var pos = OZ.DOM.pos(this._canvas);
-	return [e.clientX - pos[0] - this._canvas.clientLeft, e.clientY- pos[1] - this._canvas.clientTop];
+	return [epos[0] - pos[0] - this._canvas.clientLeft, epos[1] - pos[1] - this._canvas.clientTop];
 }
 
 Draw.prototype._message = function(e) {
@@ -135,14 +146,22 @@ Draw.prototype._execCommand = function(command) {
 			}.bind(this);
 			img.src = command.src;
 		break;
+
+		case "text":
+			this._ctx.fillStyle = command.color;
+			this._ctx.font = command.size + "px sans-serif";
+			this._ctx.textBaseline = "top";
+			this._ctx.fillText(command.text, command.x, command.y);
+		break;
 	}
 }
 
 Draw.prototype._mousedown = function(e) {
+	OZ.Event.prevent(e);
 	switch (this._mode) {
 		case "line":
-			this._ec.push(OZ.Event.add(document, "mousemove", this._mousemove.bind(this)));
-			this._ec.push(OZ.Event.add(document, "mouseup", this._mouseup.bind(this)));
+			this._ec.push(OZ.Touch.onMove(document, this._mousemove.bind(this)));
+			this._ec.push(OZ.Touch.onEnd(document, this._mouseup.bind(this)));
 			this._lastCoords = this._eventToCoords(e);
 		break;
 		
@@ -160,6 +179,22 @@ Draw.prototype._mousedown = function(e) {
 			this._commands.push(command);
 			this._execCommand(command);
 		break;
+		
+		case "text":
+			if (!this._text.value) { return; }
+			var coords = this._eventToCoords(e);
+			var command = {
+				type: "text",
+				text: this._text.value,
+				color: OZ.$("text_color").value,
+				size: parseInt(OZ.$("text_size").value),
+				x: coords[0],
+				y: coords[1]
+			}
+			this._text.value = "";
+			this._commands.push(command);
+			this._execCommand(command);
+		break;
 	}
 	
 }
@@ -168,8 +203,8 @@ Draw.prototype._mousemove = function(e) {
 	var coords = this._eventToCoords(e);
 	var command = {
 		type: "line",
-		color: OZ.$("color").value,
-		width: parseInt(OZ.$("width").value),
+		color: OZ.$("line_color").value,
+		width: parseInt(OZ.$("line_width").value),
 		points: [this._lastCoords, coords]
 	}
 	this._execCommand(command);
