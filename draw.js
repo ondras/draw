@@ -1,5 +1,5 @@
 var Draw = OZ.Class();
-Draw.URL = "ws://" + location.host + ":8888/";
+Draw.URL = "ws://" + location.host + ":8888/draw";
 Draw.prototype.init = function() {
 	this._socket = new (window.WebSocket || window.MozWebSocket)(Draw.URL);
 	this._canvas = OZ.$("canvas");
