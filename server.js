@@ -3,6 +3,7 @@ var commands = [];
 
 var app = {
 	ws: null,
+	path: "/draw",
 	onmessage: function(client, data) {
 		var cs = JSON.parse(data);
 		for (i=0;i<cs.length;i++) {
