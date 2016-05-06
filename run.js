@@ -1,8 +1,8 @@
-#!/usr/bin/env v8cgi
+#!/usr/bin/env node
 
 var app = require("./server").app;
 
-var Server = require("websocket").Server;
+var Server = require("./ws-proxy").Server;
 var ws = new Server("0.0.0.0", 8888);
 app.ws = ws;
 ws.addApplication(app);
